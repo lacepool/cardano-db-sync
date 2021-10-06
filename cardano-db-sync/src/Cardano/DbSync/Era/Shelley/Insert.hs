@@ -839,6 +839,7 @@ insertMaTxMint _tracer txId (Value _adaShouldAlwaysBeZeroButWeDoNotCheck mintMap
         DB.MaTxMint
           { DB.maTxMintPolicy = Generic.unScriptHash (policyID policy)
           , DB.maTxMintName = assetName aname
+          , DB.maTxMintIdent = Nothing
           , DB.maTxMintQuantity = DB.integerToDbInt65 amount
           , DB.maTxMintTxId = txId
           }
@@ -866,6 +867,7 @@ insertMaTxOut _tracer txOutId maMap =
         DB.MaTxOut
           { DB.maTxOutPolicy = Generic.unScriptHash (policyID policy)
           , DB.maTxOutName = assetName aname
+          , DB.maTxOutIdent = Nothing
           , DB.maTxOutQuantity = DbWord64 (fromIntegral amount)
           , DB.maTxOutTxOutId = txOutId
           }

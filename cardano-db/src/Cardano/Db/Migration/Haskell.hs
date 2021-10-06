@@ -5,6 +5,10 @@ module Cardano.Db.Migration.Haskell
   ( runHaskellMigration
   ) where
 
+import           Cardano.Db.Migration.Haskell.MultiAsset
+import           Cardano.Db.Migration.Version
+import           Cardano.Db.Run
+
 import           Control.Exception (SomeException, handle)
 import           Control.Monad.Logger (MonadLogger)
 import           Control.Monad.Trans.Reader (ReaderT)
@@ -14,8 +18,6 @@ import qualified Data.Map.Strict as Map
 
 import           Database.Persist.Sql (SqlBackend)
 
-import           Cardano.Db.Migration.Version
-import           Cardano.Db.Run
 
 import           System.Exit (exitFailure)
 import           System.IO (Handle, hClose, hFlush, hPutStrLn, stdout)
@@ -55,15 +57,5 @@ runHaskellMigration logHandle mversion =
 migrationMap :: MonadLogger m => Map MigrationVersion (ReaderT SqlBackend m ())
 migrationMap =
   Map.fromList
-    [ ( MigrationVersion 2 1 20190731, migration0001 )
+    [ ( MigrationVersion 2 2 20211006, migrateMultiAssetOne )
     ]
-
---------------------------------------------------------------------------------
-
-migration0001 :: MonadLogger m => ReaderT SqlBackend m ()
-migration0001 =
-  -- Place holder.
-  pure ()
-
---------------------------------------------------------------------------------
-

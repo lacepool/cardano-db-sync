@@ -344,9 +344,16 @@ share
   -- -----------------------------------------------------------------------------------------------
   -- Multi Asset related tables.
 
+  MultiAsset
+    policy              ByteString          sqltype=hash28type
+    name                ByteString          sqltype=asset32type
+    fingerprint         Text
+    UniqueMultiAsset    policy name
+
   MaTxMint
     policy              ByteString          sqltype=hash28type
     name                ByteString          sqltype=asset32type
+    ident               MultiAssetId Maybe
     quantity            DbInt65             sqltype=int65type
     txId                TxId                OnDeleteCascade
     UniqueMaTxMint      policy name txId
@@ -354,6 +361,7 @@ share
   MaTxOut
     policy              ByteString          sqltype=hash28type
     name                ByteString          sqltype=asset32type
+    ident               MultiAssetId Maybe
     quantity            DbWord64            sqltype=word64type
     txOutId             TxOutId             OnDeleteCascade
     UniqueMaTxOut       policy name txOutId
@@ -767,17 +775,21 @@ schemaDocs =
                                 \ that was already partially synced when `db-sync` was started)."
       EpochSyncTimeState # "The sync state when the sync time is recorded (either 'lagging' or 'following')."
 
+    MultiAsset --^ do
+      "A table containing all the unique policy/name pairs along with a CIP14 asset fingerprint"
+      MultiAssetPolicy # "The MultiAsset policy hash."
+      MultiAssetName # "The MultiAsset name."
+      MultiAssetFingerprint # "The CIP14 fingerprint for the MultiAsset."
+
     MaTxMint --^ do
       "A table containing Multi-Asset mint events."
-      MaTxMintPolicy # "The MultiAsset policy hash."
-      MaTxMintName # "The MultiAsset name."
+      MaTxMintIdent # "The MultiAsset table index specifying the asset."
       MaTxMintQuantity # "The amount of the Multi Asset to mint (can be negative to \"burn\" assets)."
       MaTxMintTxId # "The Tx table index for the transaction that contains this minting event."
 
     MaTxOut --^ do
       "A table containing Multi-Asset transaction outputs."
-      MaTxOutPolicy # "The MultiAsset policy hash."
-      MaTxOutName # "The MultiAsset name."
+      MaTxOutIdent # "The MultiAsset table index specifying the asset."
       MaTxOutQuantity # "The Multi Asset transaction output amount (denominated in the Multi Asset)."
       MaTxOutTxOutId # "The TxOut table index for the transaction that this Multi Asset transaction output."
 
