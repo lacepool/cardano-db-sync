@@ -20,6 +20,7 @@ module Cardano.Db.Insert
   , insertMaTxMint
   , insertMaTxOut
   , insertMeta
+  , insertMultiAsset
   , insertParamProposal
   , insertPotTransfer
   , insertPoolHash
@@ -142,6 +143,9 @@ insertMaTxOut = insertCheckUnique "insertMaTxOut"
 
 insertMeta :: (MonadBaseControl IO m, MonadIO m) => Meta -> ReaderT SqlBackend m MetaId
 insertMeta = insertCheckUnique "Meta"
+
+insertMultiAsset :: (MonadBaseControl IO m, MonadIO m) => MultiAsset -> ReaderT SqlBackend m MultiAssetId
+insertMultiAsset = insertCheckUnique "MultiAsset"
 
 insertParamProposal :: (MonadBaseControl IO m, MonadIO m) => ParamProposal -> ReaderT SqlBackend m ParamProposalId
 insertParamProposal = insertUnchecked "ParamProposal"

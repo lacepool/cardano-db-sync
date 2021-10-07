@@ -129,9 +129,7 @@ applyMigration (MigrationDir location) quiet pgconfig mLogFilename logHandle (ve
     exitCode <- fst <$> handle (errorExit :: SomeException -> IO a)
                         (runResourceT $ sourceCmdWithConsumer command (sinkHandle logHandle))
     case exitCode of
-      ExitSuccess -> do
-        unless quiet $ putStrLn "ok"
-        runHaskellMigration logHandle version
+      ExitSuccess -> runHaskellMigration logHandle version
       ExitFailure _ -> errorExit exitCode
   where
     errorExit :: Show e => e -> IO a

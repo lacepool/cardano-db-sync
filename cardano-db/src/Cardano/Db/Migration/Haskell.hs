@@ -1,4 +1,5 @@
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Cardano.Db.Migration.Haskell
@@ -10,7 +11,9 @@ import           Cardano.Db.Migration.Version
 import           Cardano.Db.Run
 
 import           Control.Exception (SomeException, handle)
-import           Control.Monad.Logger (MonadLogger)
+import           Control.Monad.IO.Class (MonadIO)
+-- import           Control.Monad.Logger (MonadLogger)
+import           Control.Monad.Trans.Control (MonadBaseControl)
 import           Control.Monad.Trans.Reader (ReaderT)
 
 import           Data.Map.Strict (Map)
@@ -40,21 +43,19 @@ runHaskellMigration logHandle mversion =
       Nothing -> pure ()
       Just action -> do
         hPutStrLn logHandle $ "Running : migration-" ++ renderMigrationVersion mversion ++ ".hs"
-        putStr $ "    migration-" ++ renderMigrationVersion mversion ++ ".hs  ... "
+        hPutStrLn logHandle $ "    migration-" ++ renderMigrationVersion mversion ++ ".hs  ... "
         hFlush stdout
         handle handler $ runDbHandleLogger logHandle action
-        putStrLn "ok"
   where
     handler :: SomeException -> IO a
     handler e = do
-      putStrLn $ "runHaskellMigration: " ++ show e
       hPutStrLn logHandle $ "runHaskellMigration: " ++ show e
       hClose logHandle
       exitFailure
 
 --------------------------------------------------------------------------------
 
-migrationMap :: MonadLogger m => Map MigrationVersion (ReaderT SqlBackend m ())
+migrationMap :: (MonadBaseControl IO m, MonadIO m) => Map MigrationVersion (ReaderT SqlBackend m ())
 migrationMap =
   Map.fromList
     [ ( MigrationVersion 2 2 20211006, migrateMultiAssetOne )
