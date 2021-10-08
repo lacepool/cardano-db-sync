@@ -167,7 +167,6 @@ library
                       , random-shuffle
                       , small-steps
                       , split
-                      , shelley-spec-ledger
                       , stm
                       , strict
                       , strict-containers
