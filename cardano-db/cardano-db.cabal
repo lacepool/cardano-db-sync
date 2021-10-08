@@ -78,7 +78,6 @@ library
                       , persistent
                       , persistent-documentation
                       , persistent-postgresql
-                      -- , persistent-template >= 2.7.0
                       , postgresql-simple
                       , quiet
                       , resourcet

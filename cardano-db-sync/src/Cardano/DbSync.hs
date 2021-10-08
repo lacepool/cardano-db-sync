@@ -12,7 +12,6 @@ module Cardano.DbSync
   ( ConfigFile (..)
   , SyncCommand (..)
   , SyncNodeParams (..)
-  , SyncNodePlugin (..)
   , GenesisFile (..)
   , LedgerStateDir (..)
   , NetworkName (..)
@@ -36,14 +35,26 @@ import qualified Cardano.Db as DB
 import           Cardano.DbSync.Era (insertValidateGenesisDist)
 import           Cardano.DbSync.Plugin.Default (defDbSyncNodePlugin)
 import           Cardano.DbSync.Rollback (unsafeRollback)
-import           Cardano.Sync.Database (runDbThread)
+import           Cardano.DbSync.Database (runDbThread)
 
+<<<<<<< HEAD
 import           Cardano.Sync (Block (..), MetricSetters, SyncDataLayer (..), SyncNodePlugin (..),
                    configureLogging, runSyncNode)
 import           Cardano.Sync.Config.Types (ConfigFile (..), GenesisFile (..), LedgerStateDir (..),
+=======
+import           Cardano.SMASH.Server.Config (SmashServerConfig (..), readAppUsers)
+import           Cardano.SMASH.Server.Run (runSmashServer)
+
+import           Cardano.DbSync.Api (SyncDataLayer (..))
+import           Cardano.DbSync.Types (Block (..), MetricSetters)
+import           Cardano.DbSync.Plugin (SyncNodePlugin)
+import           Cardano.DbSync.Sync (runSyncNode)
+import           Cardano.DbSync.Config.Types (ConfigFile (..), GenesisFile (..), LedgerStateDir (..),
+>>>>>>> Remove cardano-sync package
                    MigrationDir (..), NetworkName (..), SocketPath (..), SyncCommand (..),
                    SyncNodeParams (..))
-import           Cardano.Sync.Tracing.ToObjectOrphans ()
+import           Cardano.DbSync.Config (configureLogging)
+import           Cardano.DbSync.Tracing.ToObjectOrphans ()
 
 import           Control.Monad.Extra (whenJust)
 
@@ -78,7 +89,7 @@ runDbSyncNode metricsSetters mkPlugin knownMigrations params = do
           void $ unsafeRollback trce slotNo
 
         -- The separation of `cardano-db` and `cardano-sync` is such a *HUGE* pain in the neck.
-        runSyncNode (mkSyncDataLayer trce backend) metricsSetters trce (mkPlugin backend)
+        runSyncNode (mkSyncDataLayer trce backend) backend metricsSetters trce (mkPlugin backend)
               params (insertValidateGenesisDist backend) runDbThread
 
   where

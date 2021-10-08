@@ -1,6 +1,6 @@
 import           Cardano.Db
 import           Cardano.Db.Tool
-import           Cardano.Sync.Config.Types hiding (LogFileDir, MigrationDir)
+import           Cardano.DbSync.Config.Types hiding (LogFileDir, MigrationDir)
 
 import           Cardano.Slotting.Slot (SlotNo (..))
 
