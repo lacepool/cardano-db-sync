@@ -1,6 +1,6 @@
 # Schema Documentation for cardano-db-sync
 
-Schema version: 11.0.4
+Schema version: 12.0.0
 
 ### `schema_version`
 
@@ -374,7 +374,7 @@ A table containing the epoch stake distribution for each epoch.
 | `addr_id` | integer (64) | The StakeAddress table index for the stake address for this EpochStake entry. |
 | `pool_id` | integer (64) | The PoolHash table index for the pool this entry is delegated to. |
 | `amount` | lovelace | The amount (in Lovelace) being staked. |
-| `epoch_no` | integer (64) | The epoch number. |
+| `epoch_no` | uinteger | The epoch number. |
 
 ### `treasury`
 
@@ -475,6 +475,7 @@ A table containing redeemers. A redeemer is provided for all items that are vali
 | `purpose` | scriptpurposetype | What kind pf validation this redeemer is used for. It can be one of 'spend', 'mint', 'cert', 'reward'. |
 | `index` | uinteger | The index of the redeemer pointer in the transaction. |
 | `script_hash` | hash28type | The script hash this redeemer is used for. |
+| `datum_id` | integer (64) |  |
 
 ### `script`
 
@@ -488,7 +489,22 @@ A table containing scripts available in the blockchain, found in witnesses or au
 | `tx_id` | integer (64) | The Tx table index for the transaction where this script first became available. |
 | `hash` | hash28type | The Hash of the Script. |
 | `type` | scripttype | The type of the script. This is currenttly either 'timelock' or 'plutus'. |
+| `json` | jsonb | JSON representation of the timelock script, null for other script types |
+| `bytes` | bytea | CBOR encoded plutus script data, null for other script types |
 | `serialised_size` | uinteger | The size of the CBOR serialised script, if it is a Plutus script. |
+
+### `datum`
+
+A table containing Plutus Data available in the blockchain, found in redeemers or witnesses
+
+* Primary Id: `id`
+
+| Column name | Type | Description |
+|-|-|-|
+| `id` | integer (64) |  |
+| `hash` | hash32type | The Hash of the Plutus Data |
+| `tx_id` | integer (64) | The Tx table index for the transaction where this script first became available. |
+| `value` | jsonb | The actual data in json format |
 
 ### `param_proposal`
 
@@ -520,7 +536,7 @@ A table containing block chain parameter change proposals.
 | `min_utxo_value` | lovelace | The minimum value of a UTxO entry. |
 | `min_pool_cost` | lovelace | The minimum pool cost. |
 | `coins_per_utxo_word` | lovelace | The cost per UTxO word. |
-| `cost_models` | string | The per language cost models. |
+| `cost_models_id` | integer (64) | The CostModels table index for the proposal. |
 | `price_mem` | double | The per word cost of script memory usage. |
 | `price_step` | double | The cost of script execution step usage. |
 | `max_tx_ex_mem` | word64type | The maximum number of execution memory allowed to be used in a single transaction. |
@@ -562,7 +578,7 @@ The accepted protocol parameters for an epoch.
 | `min_pool_cost` | lovelace | The minimum pool cost. |
 | `nonce` | hash32type | The nonce value for this epoch. |
 | `coins_per_utxo_word` | lovelace | The cost per UTxO word. |
-| `cost_models` | string | The per language cost models. |
+| `cost_models_id` | integer (64) | The CostModels table index for the params. |
 | `price_mem` | double | The per word cost of script memory usage. |
 | `price_step` | double | The cost of script execution step usage. |
 | `max_tx_ex_mem` | word64type | The maximum number of execution memory allowed to be used in a single transaction. |
@@ -573,6 +589,18 @@ The accepted protocol parameters for an epoch.
 | `collateral_percent` | uinteger | The percentage of the txfee which must be provided as collateral when including non-native scripts. |
 | `max_collateral_inputs` | uinteger | The maximum number of collateral inputs allowed in a transaction. |
 | `block_id` | integer (64) | The Block table index for the first block where these parameters are valid. |
+
+### `cost_models`
+
+CostModels for EpochParam and ParamProposal.
+
+* Primary Id: `id`
+
+| Column name | Type | Description |
+|-|-|-|
+| `id` | integer (64) |  |
+| `costs` | jsonb | The actual costs formatted as json. |
+| `block_id` | integer (64) | The first block where these costs were introduced. This is only used for rollbacks. |
 
 ### `pool_offline_data`
 
