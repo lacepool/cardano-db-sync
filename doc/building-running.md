@@ -42,7 +42,7 @@ nix-build -A scripts.mainnet.node -o mainnet-node-local
 
 ``` shell
 ./scripts/secp256k1-setup.sh ac83be33d0956faf6b7f61a60ab524ef7d6a473a
-# Check ./github/workflows/haskell.yml to validate the git sha above.
+# Check ./.github/workflows/haskell.yml to validate the git sha above.
 
 # On Linux
 sudo make install 
